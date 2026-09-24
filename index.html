@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyLibrary - Library Reservation System</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .hidden {
+      display: none !important;
+    }
+
+    /* Navigation Bar */
+    header {
+      background-color: #0f172a;
+      color: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: #ffffff;
+    }
+    .logo span {
+      color: #10b981;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1.2rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #ffffff;
+      background-color: #334155;
+    }
+
+    /* Hamburger Menu for Mobile / Small Screens */
+    .hamburger {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 4rem 1rem;
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .hero h1 {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      color: #94a3b8;
+      max-width: 600px;
+      margin: 0 auto 1.8rem;
+      font-size: 1.05rem;
+    }
+    .hero-btns {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s;
+    }
+    .btn-primary {
+      background-color: #2563eb;
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+    .btn-secondary {
+      background-color: transparent;
+      color: #ffffff;
+      border: 1px solid #64748b;
+    }
+    .btn-secondary:hover {
+      background-color: #334155;
+    }
+
+    /* Content Cards Section */
+    .cards-section {
+      margin-bottom: 3rem;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 1.6rem;
+      margin-bottom: 2rem;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.8rem;
+      text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.8rem;
+    }
+    .card h3 {
+      margin-bottom: 0.5rem;
+    }
+    .card p {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+    .btn-card {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      width: 100%;
+    }
+    .btn-card:hover {
+      background-color: #2563eb;
+      color: #ffffff;
+    }
+
+    /* Form Page Styling */
+    .form-wrapper {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2.5rem auto;
+      max-width: 680px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .form-header {
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 0.8rem;
+    }
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.65rem 0.8rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      background-color: #f8fafc;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #2563eb;
+      background-color: #ffffff;
+    }
+    .error-msg {
+      color: #ef4444;
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+      display: block;
+      font-weight: 500;
+    }
+    .radio-group {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      margin-top: 0.4rem;
+    }
+
+    /* Summary Card */
+    .summary-card {
+      background-color: #ecfdf5;
+      border: 1px solid #10b981;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .summary-card h3 {
+      color: #047857;
+      margin-bottom: 0.8rem;
+    }
+    .summary-card p {
+      font-size: 0.9rem;
+      color: #065f46;
+      margin-bottom: 0.4rem;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #0f172a;
+      color: #94a3b8;
+      padding: 2rem 0;
+      margin-top: auto;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+    footer a {
+      color: #10b981;
+      text-decoration: none;
+      margin: 0 0.5rem;
+    }
+
+    /* Mobile Responsive Rules (Small Screen Hamburger) */
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        background-color: #0f172a;
+        padding: 1rem 0;
+        border-top: 1px solid #334155;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .nav-links li {
+        width: 100%;
+        text-align: center;
+      }
+      .nav-links a {
+        display: block;
+        padding: 0.6rem 0;
+      }
+      .hero h1 {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header>
+    <div class="container navbar">
+      <div class="logo" onclick="showPage('home')">📚 My<span>Library</span></div>
+      <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Toggle Menu">☰</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a id="nav-home" class="active" onclick="showPage('home')">Home</a></li>
+        <li><a id="nav-reserve" onclick="showPage('reserve')">Book Reservation</a></li>
+        <li><a id="nav-catalog" onclick="showPage('catalog')">Catalog</a></li>
+        <li><a id="nav-help" onclick="showPage('help')">Help Desk</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Page 1: Landing / Home Page -->
+  <main id="pageHome">
+    <section class="hero">
+      <div class="container">
+        <h1>Smart Academic Book Reservation System</h1>
+        <p>Reserve university textbooks, academic papers, and quiet study pods with real-time processing.</p>
+        <div class="hero-btns">
+          <button class="btn btn-primary" onclick="showPage('reserve')">Book Now</button>
+          <button class="btn btn-secondary" onclick="showPage('catalog')">Explore Catalog</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="container cards-section">
+      <h2 class="section-title">Our Essential Services</h2>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon">📖</div>
+          <h3>Book Reservation</h3>
+          <p>Reserve academic textbooks ahead of time to ensure immediate availability for campus pickup.</p>
+          <button class="btn btn-card" onclick="showPage('reserve')">Reserve Books</button>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">💻</div>
+          <h3>Digital E-Catalog</h3>
+          <p>Access thousands of research journals, PDFs, and archived publications remotely.</p>
+          <button class="btn btn-card" onclick="showPage('catalog')">View Catalog</button>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">🏛️</div>
+          <h3>Study Pod Booking</h3>
+          <p>Secure quiet individual or team study rooms equipped with Wi-Fi and whiteboards.</p>
+          <button class="btn btn-card" onclick="showPage('reserve')">Book Room</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Page 2: Reservation Form Page -->
+  <main id="pageReserve" class="container hidden">
+    <div class="form-wrapper">
+      <div class="form-header">
+        <h2>Book Reservation Request</h2>
+        <p style="color: #64748b; font-size: 0.9rem;">Complete all required fields below to submit your reservation.</p>
+      </div>
+
+      <form id="resForm" novalidate>
+        <div class="form-group">
+          <label for="fullName">1. Full Name *</label>
+          <input type="text" id="fullName" placeholder="John Doe">
+          <span class="error-msg" id="errFullName"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="emailAddr">2. Email Address *</label>
+          <input type="email" id="emailAddr" placeholder="john@university.edu">
+          <span class="error-msg" id="errEmailAddr"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">3. Password * (Length Rule: Min 6 chars)</label>
+          <input type="password" id="password" placeholder="Minimum 6 characters">
+          <span class="error-msg" id="errPassword"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">4. Confirm Password * (Cross-field rule: Must match Password)</label>
+          <input type="password" id="confirmPassword" placeholder="Re-enter password">
+          <span class="error-msg" id="errConfirmPassword"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">5. Phone Number * (Pattern Rule: 11 Digits)</label>
+          <input type="text" id="phone" placeholder="01700000000">
+          <span class="error-msg" id="errPhone"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="category">6. Book Category *</label>
+          <select id="category">
+            <option value="">-- Choose Category --</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Electrical Engineering">Electrical Engineering</option>
+            <option value="Business Administration">Business Administration</option>
+          </select>
+          <span class="error-msg" id="errCategory"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="quantity">7. Quantity *</label>
+          <input type="number" id="quantity" value="1" min="1" max="5">
+          <span class="error-msg" id="errQuantity"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="startDate">8. Pickup Date *</label>
+          <input type="date" id="startDate">
+          <span class="error-msg" id="errStartDate"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">9. Return Date * (Cross-field rule: Must be after Pickup Date)</label>
+          <input type="date" id="endDate">
+          <span class="error-msg" id="errEndDate"></span>
+        </div>
+
+        <div class="form-group">
+          <label>10. Borrower Status *</label>
+          <div class="radio-group">
+            <label><input type="radio" name="userRole" value="Student" checked> Student</label>
+            <label><input type="radio" name="userRole" value="Faculty"> Faculty</label>
+            <label><input type="radio" name="userRole" value="Researcher"> Researcher</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="idDocument">11. Upload Student ID Copy *</label>
+          <input type="file" id="idDocument" accept=".pdf,.jpg,.png">
+          <span class="error-msg" id="errIdDocument"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">12. Additional Book Titles / Remarks</label>
+          <textarea id="notes" rows="2" placeholder="Specific book preferences..."></textarea>
+        </div>
+
+        <div style="display:flex; gap: 1rem; margin-top: 1.5rem;">
+          <button type="submit" class="btn btn-primary" style="flex:2;">Submit Reservation</button>
+          <button type="button" class="btn" style="flex:1; background-color:#e2e8f0; color:#1e293b;" onclick="resetForm()">Reset</button>
+        </div>
+      </form>
+
+      <!-- Interactive Output Summary Card -->
+      <div id="summaryBox" class="summary-card hidden">
+        <h3>🎉 Reservation Confirmed Successfully!</h3>
+        <p id="sumName"></p>
+        <p id="sumEmail"></p>
+        <p id="sumPhone"></p>
+        <p id="sumCategory"></p>
+        <p id="sumDates"></p>
+        <p id="sumRole"></p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Page 3: Catalog -->
+  <main id="pageCatalog" class="container hidden" style="padding: 3rem 0;">
+    <h2>📚 E-Catalog & Directory</h2>
+    <p style="color: #64748b; margin-top: 0.5rem;">Explore physical and digital collection available in campus library.</p>
+  </main>
+
+  <!-- Page 4: Help Desk -->
+  <main id="pageHelp" class="container hidden" style="padding: 3rem 0;">
+    <h2>❓ Help Desk & Support</h2>
+    <p style="color: #64748b; margin-top: 0.5rem;">For questions, email support@mylibrary.edu or call +880 1700-000000.</p>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>MyLibrary Portal &copy; 2026 | Location: Dhaka, Bangladesh</p>
+      <p style="margin-top: 0.4rem;">
+        <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">LinkedIn</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Navigation Page Switcher
+    function showPage(pageId) {
+      document.getElementById('pageHome').classList.add('hidden');
+      document.getElementById('pageReserve').classList.add('hidden');
+      document.getElementById('pageCatalog').classList.add('hidden');
+      document.getElementById('pageHelp').classList.add('hidden');
+
+      document.getElementById('nav-home').classList.remove('active');
+      document.getElementById('nav-reserve').classList.remove('active');
+      document.getElementById('nav-catalog').classList.remove('active');
+      document.getElementById('nav-help').classList.remove('active');
+
+      if (pageId === 'home') {
+        document.getElementById('pageHome').classList.remove('hidden');
+        document.getElementById('nav-home').classList.add('active');
+      } else if (pageId === 'reserve') {
+        document.getElementById('pageReserve').classList.remove('hidden');
+        document.getElementById('nav-reserve').classList.add('active');
+      } else if (pageId === 'catalog') {
+        document.getElementById('pageCatalog').classList.remove('hidden');
+        document.getElementById('nav-catalog').classList.add('active');
+      } else if (pageId === 'help') {
+        document.getElementById('pageHelp').classList.remove('hidden');
+        document.getElementById('nav-help').classList.add('active');
+      }
+
+      // Close mobile hamburger menu on link click
+      document.getElementById('navLinks').classList.remove('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Toggle Mobile Navigation Menu (Hamburger)
+    function toggleMenu() {
+      document.getElementById('navLinks').classList.toggle('active');
+    }
+
+    // Client-side Validation Logic
+    document.getElementById('resForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Clear previous error messages
+      document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
+      document.getElementById('summaryBox').classList.add('hidden');
+
+      let isValid = true;
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const emailAddr = document.getElementById('emailAddr').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const phone = document.getElementById('phone').value.trim();
+      const category = document.getElementById('category').value;
+      const quantity = document.getElementById('quantity').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      const idDocument = document.getElementById('idDocument').value;
+
+      // Required Field: Full Name
+      if(!fullName) {
+        document.getElementById('errFullName').textContent = 'Full name is required.';
+        isValid = false;
+      }
+
+      // Email Format Validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!emailAddr) {
+        document.getElementById('errEmailAddr').textContent = 'Email address is required.';
+        isValid = false;
+      } else if(!emailRegex.test(emailAddr)) {
+        document.getElementById('errEmailAddr').textContent = 'Please enter a valid email address.';
+        isValid = false;
+      }
+
+      // Password Length Rule (Min 6)
+      if(!password) {
+        document.getElementById('errPassword').textContent = 'Password is required.';
+        isValid = false;
+      } else if(password.length < 6) {
+        document.getElementById('errPassword').textContent = 'Password must be at least 6 characters.';
+        isValid = false;
+      }
+
+      // Cross-Field Rule 1: Confirm Password Match
+      if(!confirmPassword) {
+        document.getElementById('errConfirmPassword').textContent = 'Please confirm your password.';
+        isValid = false;
+      } else if(password !== confirmPassword) {
+        document.getElementById('errConfirmPassword').textContent = 'Passwords do not match!';
+        isValid = false;
+      }
+
+      // Phone Pattern Rule (11 Digits starting with 01)
+      const phoneRegex = /^01[3-9]\d{8}$/;
+      if(!phone) {
+        document.getElementById('errPhone').textContent = 'Phone number is required.';
+        isValid = false;
+      } else if(!phoneRegex.test(phone)) {
+        document.getElementById('errPhone').textContent = 'Enter an 11-digit Bangladeshi mobile number (e.g. 01700000000).';
+        isValid = false;
+      }
+
+      // Required: Book Category
+      if(!category) {
+        document.getElementById('errCategory').textContent = 'Please select a book category.';
+        isValid = false;
+      }
+
+      // Quantity Rule
+      if(!quantity || quantity < 1) {
+        document.getElementById('errQuantity').textContent = 'Quantity must be at least 1.';
+        isValid = false;
+      }
+
+      // Pickup Date & Return Date Validation
+      if(!startDate) {
+        document.getElementById('errStartDate').textContent = 'Pickup date is required.';
+        isValid = false;
+      }
+      if(!endDate) {
+        document.getElementById('errEndDate').textContent = 'Return date is required.';
+        isValid = false;
+      }
+
+      // Cross-Field Rule 2: Return Date MUST be after Pickup Date
+      if(startDate && endDate) {
+        if(new Date(endDate) <= new Date(startDate)) {
+          document.getElementById('errEndDate').textContent = 'Return Date MUST be strictly after Pickup Date.';
+          isValid = false;
+        }
+      }
+
+      // File Upload Validation
+      if(!idDocument) {
+        document.getElementById('errIdDocument').textContent = 'Please upload a copy of your student ID.';
+        isValid = false;
+      }
+
+      // Success Display
+      if(isValid) {
+        const selectedRole = document.querySelector('input[name="userRole"]:checked').value;
+
+        document.getElementById('sumName').innerHTML = `<strong>Name:</strong> ${fullName}`;
+        document.getElementById('sumEmail').innerHTML = `<strong>Email:</strong> ${emailAddr}`;
+        document.getElementById('sumPhone').innerHTML = `<strong>Phone:</strong> ${phone}`;
+        document.getElementById('sumCategory').innerHTML = `<strong>Category & Quantity:</strong> ${category} (${quantity} Copy)`;
+        document.getElementById('sumDates').innerHTML = `<strong>Pickup - Return:</strong> ${startDate} to ${endDate}`;
+        document.getElementById('sumRole').innerHTML = `<strong>Role:</strong> ${selectedRole}`;
+
+        document.getElementById('summaryBox').classList.remove('hidden');
+        document.getElementById('summaryBox').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    // Reset Form Function
+    function resetForm() {
+      document.getElementById('resForm').reset();
+      document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
+      document.getElementById('summaryBox').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
